@@ -29,6 +29,16 @@ export function updateCalendarEvent(
   };
 }
 
+export function removeCalendarEvent(
+  data: WorkspaceData,
+  id: CalendarEventId,
+): WorkspaceData {
+  return {
+    ...data,
+    calendarEvents: data.calendarEvents.filter((ev) => ev.id !== id),
+  };
+}
+
 export function addEmail(data: WorkspaceData, email: Email): WorkspaceData {
   return {
     ...data,

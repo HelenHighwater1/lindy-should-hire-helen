@@ -110,7 +110,15 @@ const emails: Email[] = [
     from: contactPriya,
     to: [contactSelf, contactJordan],
     subject: "Q2 budget draft",
-    body: "Hi team - attached is the Q2 budget draft. Please review line 12 for marketing spend and reply with questions by EOD Thursday.",
+    body: `Hi Alex and Jordan —
+
+I'm circulating the Q2 budget draft (v3) for sign-off before finance closes the pack next week.
+
+What I need from each of you:
+- Marketing (line 12): $420K proposed for paid acquisition vs. $380K in Q1. I need one of you to confirm we're comfortable increasing spend before we commit in the sheet.
+- Eng contractors: $215K total across three vendors (see tab "Contractors"). Two roll off on Apr 18; one extension through May 30 is penciled in.
+
+Please reply with questions or edits by EOD Thursday so I can lock the workbook Friday morning.`,
     timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     read: true,
     status: "inbox",
@@ -121,7 +129,13 @@ const emails: Email[] = [
     from: contactSelf,
     to: [contactPriya],
     subject: "Re: Q2 budget draft",
-    body: "Thanks Priya. One question on the contractor line - should we fold that into R&D or keep it separate?",
+    body: `Thanks Priya — I've read through the Contractors tab.
+
+Question: the $90K for Northwind Integration Partners — finance had that under "Professional Services" last quarter. Should we move that line into R&D headcount roll-up for Q2, or keep it as a separate contractor bucket so we can track vendor spend?
+
+If we fold it into R&D it simplifies the board slide; if we keep it separate it's easier to cut if we need to trim later. I'll follow whatever you and Jordan prefer.
+
+— Alex`,
     timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
     read: true,
     status: "sent",
@@ -132,7 +146,23 @@ const emails: Email[] = [
     from: contactSam,
     to: [contactSelf],
     subject: "Standup notes",
-    body: "Quick recap from today: API latency is down 12%. Next step is to add caching on the read path.",
+    body: `Hey Alex — notes from today's standup so you have them in writing.
+
+What shipped / metrics
+- /v2/events read path p95 dropped from 890ms to ~780ms week over week (about 12% — I said 14% in standup but the dashboard rounds; we're using 12% in the report).
+- Error rate on the same route held flat at 0.3%.
+
+Decisions
+- We're pausing the GraphQL experiment for two weeks; REST + thin BFF stays the default for the mobile app slice.
+
+Action items
+- Me (Sam): spike Redis cache for GET /v2/events?orgId=&range= — target design doc by Wednesday EOD.
+- Jordan: review cache key strategy with me Thursday (15 min).
+- You: no action unless you want product sign-off on deprioritizing GraphQL; ping me if so.
+
+Blockers: none on our side; waiting on infra for a read replica in staging (ticket INFRA-4411).
+
+— Sam`,
     timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
     read: false,
     status: "inbox",
@@ -143,7 +173,16 @@ const emails: Email[] = [
     from: contactSelf,
     to: [contactJordan],
     subject: "Follow-up on design review",
-    body: "Jordan - looping back on the design review. Can we lock the nav pattern by Friday?",
+    body: `Jordan — looping back on Tuesday's design review for the Lindy-style assistant shell (three-panel layout).
+
+Open items I'm still carrying:
+1) Navigation pattern: persistent left rail vs. collapsible — you preferred collapsible for narrow widths; I need a final call so eng can lock breakpoints.
+2) Trace panel: do we show raw tool JSON in v1 or only human-readable steps? Product wants readable-only for the demo.
+
+Can we lock the nav pattern by this Friday so I can unblock the handoff doc?
+
+Thanks,
+Alex`,
     timestamp: new Date().toISOString(),
     read: true,
     status: "draft",
@@ -154,7 +193,20 @@ const emails: Email[] = [
     from: contactSelf,
     to: [contactSam],
     subject: "Intro to the new analytics dashboard",
-    body: "Sam - here is the link to the dashboard preview. Let me know if you want a walkthrough.",
+    body: `Sam —
+
+Sharing the internal preview of the new analytics dashboard (staging only):
+
+- Workspace: org-level funnel, weekly active "sessions", and retention cohorts for the last 12 weeks.
+- Saved views: you can pin up to five; I saved "API latency" and "Error budget" as examples.
+- Data sources: warehouse refresh runs at 6am PT; intraday is ~15 minutes delayed.
+
+Preview URL (VPN): https://analytics-staging.example.internal/preview/dash-v2
+
+No need to file bugs in Jira yet — reply here if something looks wrong on the latency charts and I'll route it.
+
+Best,
+Alex`,
     timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
     read: true,
     status: "sent",
