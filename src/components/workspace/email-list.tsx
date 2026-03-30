@@ -1,6 +1,6 @@
 import type { Email, EmailStatus } from "@/lib/types";
 
-const timeFmt = new Intl.DateTimeFormat(undefined, {
+const timeFmt = new Intl.DateTimeFormat("en-US", {
   month: "short",
   day: "numeric",
   hour: "numeric",

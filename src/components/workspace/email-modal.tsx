@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 import type { Email, EmailStatus } from "@/lib/types";
 
-const timeFmt = new Intl.DateTimeFormat(undefined, {
+const timeFmt = new Intl.DateTimeFormat("en-US", {
   weekday: "short",
   month: "short",
   day: "numeric",

@@ -30,26 +30,6 @@ body {
   scrollbar-gutter: stable;
 }
 
-/* Horizontal agent trace strip */
-.trace-strip-scroll {
-  scrollbar-gutter: stable;
-}
-
-.trace-strip-scroll::-webkit-scrollbar {
-  height: 6px;
-}
-
-.trace-strip-scroll::-webkit-scrollbar-thumb {
-  background: rgb(161 161 170);
-  border-radius: 3px;
-}
-
-@media (prefers-color-scheme: dark) {
-  .trace-strip-scroll::-webkit-scrollbar-thumb {
-    background: rgb(63 63 70);
-  }
-}
-
 @keyframes trace-step-pulse {
   50% {
     opacity: 0.55;

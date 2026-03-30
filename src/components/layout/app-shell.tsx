@@ -58,20 +58,17 @@ export function AppShell() {
     if (WS_URL_OVERRIDE) {
       return WS_URL_OVERRIDE;
     }
-    return `ws://${window.location.hostname}:${WS_PORT}`;
+    const wsScheme = window.location.protocol === "https:" ? "wss:" : "ws:";
+    return `${wsScheme}//${window.location.hostname}:${WS_PORT}`;
   }, []);
 
   const { status, send, error } = useSocket(wsUrl, handleMessage);
 
   return (
-    <div className="grid min-h-0 flex-1 grid-cols-1 divide-y divide-zinc-200 bg-zinc-50 dark:divide-zinc-800 dark:bg-zinc-950 min-[480px]:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] min-[480px]:divide-x min-[480px]:divide-y-0">
+    <div className="grid min-h-0 flex-1 grid-cols-1 divide-y divide-zinc-200 bg-zinc-50 dark:divide-zinc-800 dark:bg-zinc-950 md:grid-cols-[minmax(0,30%)_minmax(0,1fr)_minmax(0,18%)] md:divide-x md:divide-y-0">
       <WorkspacePanel />
-      <div className="flex min-h-0 min-w-0 flex-col bg-white dark:bg-zinc-950">
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-          <ChatPanel send={send} socketStatus={status} socketError={error} />
-        </div>
-        <TracePanel />
-      </div>
+      <ChatPanel send={send} socketStatus={status} socketError={error} />
+      <TracePanel />
     </div>
   );
 }

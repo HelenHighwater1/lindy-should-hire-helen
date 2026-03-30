@@ -12,7 +12,7 @@ import type { ClientMessage } from "@/lib/types/protocol";
 import type { SocketStatus } from "@/lib/hooks/use-socket";
 import { useChatStore } from "@/lib/store/chat-store";
 
-const timeFmt = new Intl.DateTimeFormat(undefined, {
+const timeFmt = new Intl.DateTimeFormat("en-US", {
   hour: "numeric",
   minute: "2-digit",
 });
@@ -97,7 +97,7 @@ export function ChatPanel({
         : "Disconnected";
 
   return (
-    <div className="flex min-h-0 flex-col bg-white dark:bg-zinc-950">
+    <div className="flex min-h-0 min-w-0 flex-col bg-white dark:bg-zinc-950">
       <header className="shrink-0 border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
         <div className="flex items-start justify-between gap-2">
           <div>

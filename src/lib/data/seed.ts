@@ -1,36 +1,9 @@
 import type { CalendarEvent, Contact, Email, WorkspaceData } from "@/lib/types";
 
 /**
- * Builds an ISO timestamp for today at the given local time.
+ * Demo workspace content uses fixed ISO timestamps so server and client render
+ * identical HTML (avoids React hydration errors on Vercel and elsewhere).
  */
-function todayAt(
-  hours: number,
-  minutes: number,
-  durationMinutes: number,
-): {
-  start: string;
-  end: string;
-} {
-  const start = new Date();
-  start.setHours(hours, minutes, 0, 0);
-  const end = new Date(start.getTime() + durationMinutes * 60 * 1000);
-  return { start: start.toISOString(), end: end.toISOString() };
-}
-
-/**
- * Builds an ISO timestamp for tomorrow at the given local time.
- */
-function tomorrowAt(
-  hours: number,
-  minutes: number,
-  durationMinutes: number,
-): { start: string; end: string } {
-  const start = new Date();
-  start.setDate(start.getDate() + 1);
-  start.setHours(hours, minutes, 0, 0);
-  const end = new Date(start.getTime() + durationMinutes * 60 * 1000);
-  return { start: start.toISOString(), end: end.toISOString() };
-}
 
 const contactSelf: Contact = {
   id: "contact-self",
@@ -56,17 +29,12 @@ const contactPriya: Contact = {
   email: "priya.shah@example.com",
 };
 
-const standup = todayAt(9, 30, 30);
-const oneOnOne = todayAt(14, 0, 60);
-const focusBlock = todayAt(10, 0, 120);
-const tomorrowSync = tomorrowAt(11, 0, 45);
-
 const calendarEvents: CalendarEvent[] = [
   {
     id: "cal-standup",
     title: "Team standup",
-    start: standup.start,
-    end: standup.end,
+    start: "2026-03-30T13:30:00.000Z",
+    end: "2026-03-30T14:00:00.000Z",
     attendees: [contactSelf, contactJordan, contactSam],
     description: "Daily sync on sprint progress.",
     type: "meeting",
@@ -74,8 +42,8 @@ const calendarEvents: CalendarEvent[] = [
   {
     id: "cal-focus",
     title: "Focus block",
-    start: focusBlock.start,
-    end: focusBlock.end,
+    start: "2026-03-30T14:00:00.000Z",
+    end: "2026-03-30T16:00:00.000Z",
     attendees: [contactSelf],
     description: "Deep work - no meetings.",
     type: "focus",
@@ -83,8 +51,8 @@ const calendarEvents: CalendarEvent[] = [
   {
     id: "cal-1on1",
     title: "1:1 with Jordan",
-    start: oneOnOne.start,
-    end: oneOnOne.end,
+    start: "2026-03-30T18:00:00.000Z",
+    end: "2026-03-30T19:00:00.000Z",
     attendees: [contactSelf, contactJordan],
     description: "Career check-in and roadmap.",
     type: "meeting",
@@ -92,8 +60,8 @@ const calendarEvents: CalendarEvent[] = [
   {
     id: "cal-tomorrow-sync",
     title: "Product sync",
-    start: tomorrowSync.start,
-    end: tomorrowSync.end,
+    start: "2026-03-31T15:00:00.000Z",
+    end: "2026-03-31T15:45:00.000Z",
     attendees: [contactSelf, contactPriya, contactSam],
     description: "Roadmap review for Q2.",
     type: "meeting",
@@ -119,7 +87,7 @@ What I need from each of you:
 - Eng contractors: $215K total across three vendors (see tab "Contractors"). Two roll off on Apr 18; one extension through May 30 is penciled in.
 
 Please reply with questions or edits by EOD Thursday so I can lock the workbook Friday morning.`,
-    timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+    timestamp: "2026-03-28T14:00:00.000Z",
     read: true,
     status: "inbox",
   },
@@ -136,7 +104,7 @@ Question: the $90K for Northwind Integration Partners — finance had that under
 If we fold it into R&D it simplifies the board slide; if we keep it separate it's easier to cut if we need to trim later. I'll follow whatever you and Jordan prefer.
 
 — Alex`,
-    timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    timestamp: "2026-03-29T14:00:00.000Z",
     read: true,
     status: "sent",
   },
@@ -163,7 +131,7 @@ Action items
 Blockers: none on our side; waiting on infra for a read replica in staging (ticket INFRA-4411).
 
 — Sam`,
-    timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+    timestamp: "2026-03-30T09:00:00.000Z",
     read: false,
     status: "inbox",
   },
@@ -183,7 +151,7 @@ Can we lock the nav pattern by this Friday so I can unblock the handoff doc?
 
 Thanks,
 Alex`,
-    timestamp: new Date().toISOString(),
+    timestamp: "2026-03-30T11:30:00.000Z",
     read: true,
     status: "draft",
   },
@@ -207,7 +175,7 @@ No need to file bugs in Jira yet — reply here if something looks wrong on the 
 
 Best,
 Alex`,
-    timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+    timestamp: "2026-03-25T14:00:00.000Z",
     read: true,
     status: "sent",
   },
