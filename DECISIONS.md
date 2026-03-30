@@ -21,6 +21,7 @@ unless a new task makes them impossible -- in that case, flag it explicitly.
   `src/instrumentation.ts` when `NEXT_RUNTIME === "nodejs"` so `npm run dev` runs the app and
   the socket server together. Next.js 16 enables `src/instrumentation.ts` by default; the older
   `experimental.instrumentationHook` flag is invalid on this version and is not set.
+- Render ([render.yaml](render.yaml)): two free **Web** services — **lindy-web** runs Next with `DISABLE_IN_PROCESS_WS=1` and `NEXT_PUBLIC_WS_URL` pointing at **lindy-ws**; **lindy-ws** runs `npm run start:ws` and listens on Render's `PORT` (`parsePort()` uses `WS_PORT` else `PORT` else 3001). Free instances spin down when idle.
 - WebSocket testing: no in-process integration tests for the `ws` server. Vitest module resolution
   conflicts with `ws`, and such tests can hang. Manual verification and unit tests for pure
   helpers only.

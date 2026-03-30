@@ -1,0 +1,44 @@
+# Render Blueprint: https://render.com/docs/blueprint-spec
+#
+# Two Web Services (free tier spins down when idle):
+#   - lindy-web: Next.js UI (no in-process WebSocket)
+#   - lindy-ws:  Agent WebSocket server (listens on Render PORT)
+#
+# After first deploy, set lindy-web env NEXT_PUBLIC_WS_URL to the lindy-ws
+# public URL with wss:// (Dashboard → lindy-ws → copy URL), then redeploy lindy-web
+# so the client bundle picks it up.
+
+services:
+  - type: web
+    name: lindy-web
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: DISABLE_IN_PROCESS_WS
+        value: "1"
+      - key: NEXT_PUBLIC_WS_URL
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ANTHROPIC_MODEL
+        sync: false
+
+  - type: web
+    name: lindy-ws
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm ci
+    startCommand: npm run start:ws
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ANTHROPIC_MODEL
+        sync: false

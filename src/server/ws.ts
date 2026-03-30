@@ -15,12 +15,21 @@ export interface WsHandle {
 }
 
 function parsePort(): number {
-  const raw = process.env.WS_PORT;
-  if (raw === undefined || raw === "") {
-    return 3001;
+  const wsRaw = process.env.WS_PORT;
+  if (wsRaw !== undefined && wsRaw !== "") {
+    const n = Number.parseInt(wsRaw, 10);
+    if (Number.isFinite(n) && n > 0) {
+      return n;
+    }
   }
-  const n = Number.parseInt(raw, 10);
-  return Number.isFinite(n) && n > 0 ? n : 3001;
+  const portRaw = process.env.PORT;
+  if (portRaw !== undefined && portRaw !== "") {
+    const n = Number.parseInt(portRaw, 10);
+    if (Number.isFinite(n) && n > 0) {
+      return n;
+    }
+  }
+  return 3001;
 }
 
 function isChatMessage(value: unknown): value is ClientMessage {
