@@ -8,11 +8,13 @@ import {
   type KeyboardEvent,
 } from "react";
 
+import { DISPLAY_TIME_ZONE } from "@/lib/display-timezone";
 import type { ClientMessage } from "@/lib/types/protocol";
 import type { SocketStatus } from "@/lib/hooks/use-socket";
 import { useChatStore } from "@/lib/store/chat-store";
 
 const timeFmt = new Intl.DateTimeFormat("en-US", {
+  timeZone: DISPLAY_TIME_ZONE,
   hour: "numeric",
   minute: "2-digit",
 });
@@ -63,7 +65,7 @@ export function ChatPanel({
     if (socketStatus !== "connected") {
       addMessage({
         role: "error",
-        text: "Not connected to the agent server. Is `npm run dev` running?",
+        text: "Not connected to agent",
       });
       return;
     }

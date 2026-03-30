@@ -2,9 +2,11 @@
 
 import { useEffect, useRef } from "react";
 
+import { DISPLAY_TIME_ZONE } from "@/lib/display-timezone";
 import { useChatStore } from "@/lib/store/chat-store";
 
 const timeFmt = new Intl.DateTimeFormat("en-US", {
+  timeZone: DISPLAY_TIME_ZONE,
   hour: "numeric",
   minute: "2-digit",
   second: "2-digit",

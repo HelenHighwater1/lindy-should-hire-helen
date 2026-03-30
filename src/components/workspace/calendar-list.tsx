@@ -1,6 +1,8 @@
+import { DISPLAY_TIME_ZONE } from "@/lib/display-timezone";
 import type { CalendarEvent } from "@/lib/types";
 
 const timeFmt = new Intl.DateTimeFormat("en-US", {
+  timeZone: DISPLAY_TIME_ZONE,
   weekday: "short",
   month: "short",
   day: "numeric",

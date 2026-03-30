@@ -6,6 +6,7 @@ import {
   RateLimitError,
 } from "@anthropic-ai/sdk";
 import type { Tool } from "@anthropic-ai/sdk/resources/messages/messages";
+import { DISPLAY_TIME_ZONE } from "@/lib/display-timezone";
 import type {
   AgentAction,
   AgentActionType,
@@ -77,6 +78,7 @@ function assertApiKey(): void {
 }
 
 const localTimeFmt = new Intl.DateTimeFormat("en-US", {
+  timeZone: DISPLAY_TIME_ZONE,
   weekday: "short",
   month: "short",
   day: "numeric",
@@ -133,12 +135,10 @@ export function buildSystemPrompt(workspace: WorkspaceData): string {
   const calendarJson = formatCalendarForPrompt(workspace.calendarEvents);
   const now = new Date();
   const nowLocal = localTimeFmt.format(now);
-  const tzName =
-    Intl.DateTimeFormat().resolvedOptions().timeZone ?? "unknown timezone";
 
   return `You are Lindy, an AI assistant for Alex Morgan in a simulated desktop workspace (demo app).
 
-Current date/time: ${nowLocal} (${tzName})
+Current date/time: ${nowLocal} (${DISPLAY_TIME_ZONE})
 
 IMPORTANT: All ISO 8601 timestamps in the data below are in UTC. The "localStart" / "localEnd" fields show the **user's local time** — always use these when referring to times in your natural-language replies to the user. When calling tools, continue to use ISO 8601 UTC strings.
 

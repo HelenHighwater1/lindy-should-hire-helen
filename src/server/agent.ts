@@ -14,12 +14,14 @@ import type {
   WorkspaceData,
   WorkspaceMutation,
 } from "@/lib/types";
+import { DISPLAY_TIME_ZONE } from "@/lib/display-timezone";
 import type { ServerMessage } from "@/lib/types/protocol";
 import { type ChatTurn, ProcessChatError, processChat } from "@/server/llm";
 
 const STEP_DELAY_MS = 300;
 
 const conflictTimeFmt = new Intl.DateTimeFormat("en-US", {
+  timeZone: DISPLAY_TIME_ZONE,
   hour: "numeric",
   minute: "2-digit",
 });
