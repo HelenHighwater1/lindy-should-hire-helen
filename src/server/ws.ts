@@ -123,12 +123,23 @@ export function attachWebSocketServer(server: HttpServer): void {
   const wss = new WebSocketServer({ noServer: true });
 
   server.on("upgrade", (request, socket, head) => {
+    console.info("[WebSocket] upgrade request received:", request.url);
     wss.handleUpgrade(request, socket, head, (ws) => {
+      console.info("[WebSocket] upgrade complete, emitting connection");
       wss.emit("connection", ws, request);
     });
   });
 
-  wss.on("connection", handleConnection);
+  wss.on("connection", (ws) => {
+    console.info("[WebSocket] client connected");
+    ws.on("close", (code, reason) => {
+      console.info("[WebSocket] client disconnected:", code, reason.toString());
+    });
+    ws.on("error", (err) => {
+      console.error("[WebSocket] socket error:", err.message);
+    });
+    handleConnection(ws);
+  });
 }
 
 /**
