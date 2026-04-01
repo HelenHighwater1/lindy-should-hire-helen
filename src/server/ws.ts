@@ -22,13 +22,8 @@ function parsePort(): number {
       return n;
     }
   }
-  const portRaw = process.env.PORT;
-  if (portRaw !== undefined && portRaw !== "") {
-    const n = Number.parseInt(portRaw, 10);
-    if (Number.isFinite(n) && n > 0) {
-      return n;
-    }
-  }
+  // Do NOT fall back to PORT — that's the HTTP server port (used by Next.js)
+  // and binding WS to the same port causes EADDRINUSE in production.
   return 3001;
 }
 

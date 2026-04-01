@@ -124,8 +124,7 @@ export function ChatPanel({
         </div>
         {socketError ? (
           <p className="mt-1 text-xs text-amber-700 dark:text-amber-300">
-            WebSocket error — check that the server is on port{" "}
-            {process.env.NEXT_PUBLIC_WS_PORT ?? "3001"}.
+            WebSocket error — unable to connect to the agent server.
           </p>
         ) : null}
       </header>
