@@ -6,11 +6,9 @@ I saw the Full Stack Software Engineer (Early Career) role and wanted to show yo
 
 ## What it does
 
-Three panels, one prompt.
-
 The left panel is a simulated workspace: emails, calendar events, contacts. The center panel is a chat interface where you type natural language requests. The right panel is a live agent trace that streams each step as the AI processes your request.
 
-The magic moment is that all three panels update simultaneously. You see what the assistant says, how it got there, and what changed in the workspace. Schedule a meeting, draft an email, block focus time, summarize a thread, generate a meeting prep brief. It all works against the mock data in real time.
+You see what the assistant says, how it got there, and what changed in the workspace. Schedule a meeting, draft an email, block focus time, summarize a thread, generate a meeting prep brief. It all works against the mock data in real time.
 
 ## Why these technical choices
 
@@ -22,62 +20,14 @@ Every major decision maps to something in the job description or Lindy's actual 
 
 **Anthropic SDK** for the LLM integration. The agent parses user intent, plans actions, and generates responses using Claude. The job description lists LLM API integration as a bonus skill. I wanted that to be real, not faked.
 
-**Zustand** for state management. Lightweight, minimal boilerplate, and it made workspace reactivity straightforward. Two stores: one for the workspace data, one for the chat and trace UI.
+**Zustand** not listed in your stack, but I used it for state management. Lightweight, minimal boilerplate, and it made workspace reactivity straightforward. Two stores: one for the workspace data, one for the chat and trace UI.
 
-**Tailwind CSS v4** for styling. No component library. Every layout decision is visible in the code.
+**Tailwind CSS** for styling. No component library. Every layout decision is visible in the code.
 
 ## Honest notes
 
-WebSocket setup was the hardest part. Getting `ws` to play nicely with Next.js in both local dev and production took more time than I expected. I ended up with two modes: a standalone server for dev and an HTTP-upgrade approach for production. It works well now, but it was not obvious how to get there.
+I've never used WebSocket before -  but you mentioned it as a nice to have in the job description, so what better time to learn than now!  However, that did set me back pretty far - I got it running locally just fine, but that was definitely the biggest hurdle - getting `ws` to play nicely with Next.js in production was tough. I ended up with two modes: a standalone server for dev and an HTTP-upgrade approach for production. It works well now, but I definitely learned a lot in the last day.
 
-If I had more time, I would add automated integration tests (Vitest and `ws` fought each other), better error states, and a one-click demo scenario. The agent logic could also be more granular in how it streams trace steps.
+If I had more time, I would add automated integration tests, better error states, and definitely improve the agent logic.  I know this is far from what I would want a user to see, but I hope it shows you that I can provide value. 
 
-I learned a lot about how real-time AI interfaces need to feel alive. Timing, ordering, and visual pacing matter as much as correctness.
 
-## How to run it locally
-
-### Prerequisites
-
-- Node.js 20+
-- An Anthropic API key ([console.anthropic.com](https://console.anthropic.com/))
-
-### Setup
-
-```bash
-git clone <this-repo>
-cd lindy
-npm install
-```
-
-Copy the example env file and add your API key:
-
-```bash
-cp .env.example .env
-```
-
-Then edit `.env` and set `ANTHROPIC_API_KEY` to your key.
-
-### Run (development)
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000). The WebSocket server starts automatically on port 3001.
-
-### Run (production mode)
-
-```bash
-npm run build
-npm start
-```
-
-This runs the custom server that serves both Next.js and WebSocket on a single port.
-
-### Other commands
-
-| Command | What it does |
-|---|---|
-| `npm test` | Run tests (Vitest) |
-| `npm run lint` | Lint with ESLint |
-| `npm run format` | Format with Prettier |

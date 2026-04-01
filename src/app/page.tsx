@@ -11,7 +11,7 @@ export default function Home() {
           {" "}by Helen
         </span>
         <a
-          href="https://github.com/HelenHighwater1/lindy-should-hire-helen"
+          href="https://github.com/HelenHighwater1/lindy-should-hire-helen?tab=readme-ov-file#hey-lindy-team"
           target="_blank"
           rel="noreferrer"
           className="flex items-center gap-1.5 rounded-full border border-zinc-700 bg-zinc-800/50 px-3 py-1 text-[11px] font-medium text-zinc-300 transition-colors hover:border-zinc-500 hover:bg-zinc-800 hover:text-zinc-100"
