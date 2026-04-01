@@ -23,10 +23,6 @@ void app.prepare().then(() => {
   attachWebSocketServer(server);
   console.info("[WebSocket] attached to HTTP server (shared port)");
 
-  server.on("upgrade", () => {
-    console.info("[Server] raw upgrade event fired");
-  });
-
   server.listen(port, () => {
     console.info(`> Ready on http://localhost:${port}`);
   });

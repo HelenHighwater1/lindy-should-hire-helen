@@ -120,26 +120,28 @@ function handleConnection(socket: WebSocket) {
  * Used by the custom production server so HTTP and WS share a single port.
  */
 export function attachWebSocketServer(server: HttpServer): void {
-  const wss = new WebSocketServer({ noServer: true });
+  const wss = new WebSocketServer({
+    noServer: true,
+    perMessageDeflate: false,
+  });
 
   server.on("upgrade", (request, socket, head) => {
-    console.info("[WebSocket] upgrade request received:", request.url);
     wss.handleUpgrade(request, socket, head, (ws) => {
-      console.info("[WebSocket] upgrade complete, emitting connection");
       wss.emit("connection", ws, request);
     });
   });
 
-  wss.on("connection", (ws) => {
-    console.info("[WebSocket] client connected");
-    ws.on("close", (code, reason) => {
-      console.info("[WebSocket] client disconnected:", code, reason.toString());
-    });
-    ws.on("error", (err) => {
-      console.error("[WebSocket] socket error:", err.message);
-    });
-    handleConnection(ws);
-  });
+  // Keep connections alive through Railway's edge proxy.
+  const PING_INTERVAL_MS = 25_000;
+  setInterval(() => {
+    for (const ws of wss.clients) {
+      if (ws.readyState === ws.OPEN) {
+        ws.ping();
+      }
+    }
+  }, PING_INTERVAL_MS);
+
+  wss.on("connection", handleConnection);
 }
 
 /**
