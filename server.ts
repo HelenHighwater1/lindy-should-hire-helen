@@ -17,12 +17,6 @@ const handle = app.getRequestHandler();
 
 void app.prepare().then(() => {
   const server = createServer((req, res) => {
-    // Skip WebSocket upgrade requests — they are handled by the upgrade
-    // event listener registered in attachWebSocketServer. If Next.js
-    // responds to them as normal HTTP, it corrupts the socket.
-    if (req.headers.upgrade) {
-      return;
-    }
     handle(req, res, parse(req.url!, true));
   });
 

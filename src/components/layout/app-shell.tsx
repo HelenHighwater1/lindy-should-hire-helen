@@ -64,8 +64,8 @@ export function AppShell() {
     if (WS_PORT) {
       return `${wsScheme}//${window.location.hostname}:${WS_PORT}`;
     }
-    // Same origin — works when the custom server shares HTTP + WS on one port
-    return `${wsScheme}//${window.location.host}`;
+    // Same origin + /ws path — works with the custom server (server.ts)
+    return `${wsScheme}//${window.location.host}/ws`;
   }, []);
 
   const { status, send, error } = useSocket(wsUrl, handleMessage);

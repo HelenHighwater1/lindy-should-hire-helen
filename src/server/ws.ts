@@ -121,17 +121,11 @@ function handleConnection(socket: WebSocket) {
  */
 export function attachWebSocketServer(server: HttpServer): void {
   const wss = new WebSocketServer({
-    noServer: true,
+    server,
     perMessageDeflate: false,
+    path: "/ws",
   });
 
-  server.on("upgrade", (request, socket, head) => {
-    wss.handleUpgrade(request, socket, head, (ws) => {
-      wss.emit("connection", ws, request);
-    });
-  });
-
-  // Keep connections alive through Railway's edge proxy.
   const PING_INTERVAL_MS = 25_000;
   setInterval(() => {
     for (const ws of wss.clients) {
