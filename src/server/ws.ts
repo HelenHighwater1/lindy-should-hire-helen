@@ -1,3 +1,4 @@
+import type { Server as HttpServer } from "node:http";
 import { WebSocketServer } from "ws";
 import type { RawData, WebSocket } from "ws";
 import { initialWorkspaceData } from "@/lib/data/seed";
@@ -22,8 +23,6 @@ function parsePort(): number {
       return n;
     }
   }
-  // Do NOT fall back to PORT — that's the HTTP server port (used by Next.js)
-  // and binding WS to the same port causes EADDRINUSE in production.
   return 3001;
 }
 
@@ -49,6 +48,93 @@ interface ConnectionState {
 
 const connectionStates = new Map<WebSocket, ConnectionState>();
 
+function handleConnection(socket: WebSocket) {
+  connectionStates.set(socket, {
+    workspace: cloneWorkspaceForConnection(initialWorkspaceData),
+    history: [],
+  });
+
+  socket.on("close", () => {
+    connectionStates.delete(socket);
+  });
+
+  socket.on("message", (data: RawData) => {
+    void (async () => {
+      try {
+        const raw = typeof data === "string" ? data : data.toString("utf8");
+        const parsed: unknown = JSON.parse(raw);
+        if (!isChatMessage(parsed)) {
+          const errMsg: ServerMessage = {
+            type: "error",
+            payload: { message: "Invalid message" },
+          };
+          socket.send(JSON.stringify(errMsg));
+          return;
+        }
+
+        const state = connectionStates.get(socket);
+        if (!state) {
+          const errMsg: ServerMessage = {
+            type: "error",
+            payload: { message: "Connection state missing" },
+          };
+          socket.send(JSON.stringify(errMsg));
+          return;
+        }
+
+        const emit = (msg: ServerMessage) => {
+          socket.send(JSON.stringify(msg));
+        };
+
+        try {
+          const result: AgentRunResult = await runAgent(
+            parsed.payload.text,
+            state.workspace,
+            emit,
+            state.history,
+          );
+          connectionStates.set(socket, {
+            workspace: result.workspace,
+            history: result.history,
+          });
+        } catch {
+          emit({
+            type: "error",
+            payload: { message: "Agent run failed" },
+          });
+          emit({ type: "agent_done" });
+        }
+      } catch {
+        const errMsg: ServerMessage = {
+          type: "error",
+          payload: { message: "Invalid JSON" },
+        };
+        socket.send(JSON.stringify(errMsg));
+      }
+    })();
+  });
+}
+
+/**
+ * Attach WebSocket handling to an existing HTTP server (shared-port mode).
+ * Used by the custom production server so HTTP and WS share a single port.
+ */
+export function attachWebSocketServer(server: HttpServer): void {
+  const wss = new WebSocketServer({ noServer: true });
+
+  server.on("upgrade", (request, socket, head) => {
+    wss.handleUpgrade(request, socket, head, (ws) => {
+      wss.emit("connection", ws, request);
+    });
+  });
+
+  wss.on("connection", handleConnection);
+}
+
+/**
+ * Start a standalone WebSocket server on its own port.
+ * Used in local dev (via instrumentation.ts) and the standalone script.
+ */
 export function startWebSocketServer(): Promise<WsHandle> {
   const port = parsePort();
 
@@ -64,73 +150,7 @@ export function startWebSocketServer(): Promise<WsHandle> {
 
     wss.once("listening", () => {
       wss.off("error", fail);
-      wss.on("connection", (socket) => {
-        connectionStates.set(socket, {
-          workspace: cloneWorkspaceForConnection(initialWorkspaceData),
-          history: [],
-        });
-
-        socket.on("close", () => {
-          connectionStates.delete(socket);
-        });
-
-        socket.on("message", (data: RawData) => {
-          void (async () => {
-            try {
-              const raw =
-                typeof data === "string" ? data : data.toString("utf8");
-              const parsed: unknown = JSON.parse(raw);
-              if (!isChatMessage(parsed)) {
-                const errMsg: ServerMessage = {
-                  type: "error",
-                  payload: { message: "Invalid message" },
-                };
-                socket.send(JSON.stringify(errMsg));
-                return;
-              }
-
-              const state = connectionStates.get(socket);
-              if (!state) {
-                const errMsg: ServerMessage = {
-                  type: "error",
-                  payload: { message: "Connection state missing" },
-                };
-                socket.send(JSON.stringify(errMsg));
-                return;
-              }
-
-              const emit = (msg: ServerMessage) => {
-                socket.send(JSON.stringify(msg));
-              };
-
-              try {
-                const result: AgentRunResult = await runAgent(
-                  parsed.payload.text,
-                  state.workspace,
-                  emit,
-                  state.history,
-                );
-                connectionStates.set(socket, {
-                  workspace: result.workspace,
-                  history: result.history,
-                });
-              } catch {
-                emit({
-                  type: "error",
-                  payload: { message: "Agent run failed" },
-                });
-                emit({ type: "agent_done" });
-              }
-            } catch {
-              const errMsg: ServerMessage = {
-                type: "error",
-                payload: { message: "Invalid JSON" },
-              };
-              socket.send(JSON.stringify(errMsg));
-            }
-          })();
-        });
-      });
+      wss.on("connection", handleConnection);
 
       resolve({
         port,

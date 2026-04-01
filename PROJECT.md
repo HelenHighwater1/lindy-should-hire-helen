@@ -52,21 +52,18 @@ The agent can handle these types of requests against the simulated workspace:
 
 ## Deploying on Railway
 
+`npm start` runs a custom server (`server.ts`) that serves Next.js and
+WebSocket on the same port, so Railway only needs to expose one service.
+
 - Create a new Railway project and connect this GitHub repo.
-- Use these commands:
-  - Build: `npm ci && npm run build`
-  - Start: `npm start`
-- Configure environment variables on the service:
+- Build command: `npm ci && npm run build`
+- Start command: `npm start`
+- Environment variables on Railway:
   - `ANTHROPIC_API_KEY` (required)
   - `ANTHROPIC_MODEL` (optional, recommended: `claude-sonnet-4-20250514`)
-  - `WS_PORT` (optional, default `3001`)
-  - `NEXT_PUBLIC_WS_PORT` (optional, usually set to the same value as `WS_PORT`)
-- Do not set `DISABLE_IN_PROCESS_WS` so `src/instrumentation.ts` can start the
-  WebSocket server inside the Node.js runtime.
-- Leave `NEXT_PUBLIC_WS_URL` unset when running a single Railway service so the
-  client derives the WebSocket URL from the current host and `NEXT_PUBLIC_WS_PORT`:
-  it will connect to `ws://<host>:NEXT_PUBLIC_WS_PORT` for HTTP sites or
-  `wss://<host>:NEXT_PUBLIC_WS_PORT` for HTTPS.
+- Do **not** set `WS_PORT`, `NEXT_PUBLIC_WS_PORT`, `NEXT_PUBLIC_WS_URL`, or
+  `DISABLE_IN_PROCESS_WS` on Railway — the custom server handles everything
+  on the single platform-provided `PORT`.
 
 ## What to avoid
 

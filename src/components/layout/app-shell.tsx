@@ -11,11 +11,13 @@ import { useWorkspaceStore } from "@/lib/store/workspace-store";
 import type { ServerMessage } from "@/lib/types";
 
 /**
- * Prefer NEXT_PUBLIC_WS_URL (full URL) if set, otherwise build from
- * NEXT_PUBLIC_WS_PORT (default 3001).
+ * Prefer NEXT_PUBLIC_WS_URL (full URL) if set, then NEXT_PUBLIC_WS_PORT
+ * for a separate-port setup (local dev). When neither is set the client
+ * connects to the page origin (same host+port) which works with the
+ * custom production server that shares HTTP and WS on one port.
  */
 const WS_URL_OVERRIDE = process.env.NEXT_PUBLIC_WS_URL ?? "";
-const WS_PORT = process.env.NEXT_PUBLIC_WS_PORT ?? "3001";
+const WS_PORT = process.env.NEXT_PUBLIC_WS_PORT ?? "";
 
 export function AppShell() {
   const addMessage = useChatStore((s) => s.addMessage);
@@ -59,7 +61,11 @@ export function AppShell() {
       return WS_URL_OVERRIDE;
     }
     const wsScheme = window.location.protocol === "https:" ? "wss:" : "ws:";
-    return `${wsScheme}//${window.location.hostname}:${WS_PORT}`;
+    if (WS_PORT) {
+      return `${wsScheme}//${window.location.hostname}:${WS_PORT}`;
+    }
+    // Same origin — works when the custom server shares HTTP + WS on one port
+    return `${wsScheme}//${window.location.host}`;
   }, []);
 
   const { status, send, error } = useSocket(wsUrl, handleMessage);
