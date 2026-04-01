@@ -29,13 +29,13 @@ const contactPriya: Contact = {
   email: "priya.shah@example.com",
 };
 
-/** Calendar instants: March 2026 is PDT (UTC−7). Standup anchor: 8:00–8:30 AM Pacific. */
+/** Calendar instants: March 2026 is PDT (UTC−7). Earliest event: 9:00 AM Pacific. */
 const calendarEvents: CalendarEvent[] = [
   {
     id: "cal-standup",
     title: "Team standup",
-    start: "2026-03-30T15:00:00.000Z",
-    end: "2026-03-30T15:30:00.000Z",
+    start: "2026-03-30T16:00:00.000Z",
+    end: "2026-03-30T16:30:00.000Z",
     attendees: [contactSelf, contactJordan, contactSam],
     description: "Daily sync on sprint progress.",
     type: "meeting",
@@ -43,8 +43,8 @@ const calendarEvents: CalendarEvent[] = [
   {
     id: "cal-focus",
     title: "Focus block",
-    start: "2026-03-30T16:00:00.000Z",
-    end: "2026-03-30T18:00:00.000Z",
+    start: "2026-03-30T17:00:00.000Z",
+    end: "2026-03-30T19:00:00.000Z",
     attendees: [contactSelf],
     description: "Deep work - no meetings.",
     type: "focus",
@@ -52,8 +52,8 @@ const calendarEvents: CalendarEvent[] = [
   {
     id: "cal-1on1",
     title: "1:1 with Jordan",
-    start: "2026-03-30T18:00:00.000Z",
-    end: "2026-03-30T19:00:00.000Z",
+    start: "2026-03-30T19:00:00.000Z",
+    end: "2026-03-30T20:00:00.000Z",
     attendees: [contactSelf, contactJordan],
     description: "Career check-in and roadmap.",
     type: "meeting",
@@ -61,8 +61,8 @@ const calendarEvents: CalendarEvent[] = [
   {
     id: "cal-tomorrow-sync",
     title: "Product sync",
-    start: "2026-03-31T18:00:00.000Z",
-    end: "2026-03-31T18:45:00.000Z",
+    start: "2026-03-31T19:45:00.000Z",
+    end: "2026-03-31T20:30:00.000Z",
     attendees: [contactSelf, contactPriya, contactSam],
     description: "Roadmap review for Q2.",
     type: "meeting",
