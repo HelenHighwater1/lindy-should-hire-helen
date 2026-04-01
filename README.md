@@ -26,8 +26,10 @@ Every major decision maps to something in the job description or Lindy's actual 
 
 ## Honest notes
 
-I've never used WebSocket before -  but you mentioned it as a nice to have in the job description, so what better time to learn than now!  However, that did set me back pretty far - I got it running locally just fine, but that was definitely the biggest hurdle - getting `ws` to play nicely with Next.js in production was tough. I ended up with two modes: a standalone server for dev and an HTTP-upgrade approach for production. It works well now, but I definitely learned a lot in the last day.
+I've never used WebSocket before -  but you mentioned it as a nice to have in the job description, so what better time to learn than now!  However, that did set me back pretty far - I got it running locally just fine, but getting `ws` to play nicely with Next.js in production was tough. I ended up with two modes: a standalone server for dev and an HTTP-upgrade approach for production. It works well now, but I definitely learned a lot in the last day.
 
 If I had more time, I would add automated integration tests, better error states, and definitely improve the agent logic.  I know this is far from what I would want a user to see, but I hope it shows you that I can provide value. 
 
+---
 
+[Check out my portfolio](https://heyimhelen.com) | [LinkedIn](https://www.linkedin.com/in/helen-highwater-96981532/)
