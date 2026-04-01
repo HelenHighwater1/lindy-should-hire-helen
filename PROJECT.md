@@ -62,7 +62,7 @@ WebSocket on the same port, so Railway only needs to expose one service.
   - `ANTHROPIC_API_KEY` (required)
   - `ANTHROPIC_MODEL` (optional, recommended: `claude-sonnet-4-20250514`)
 - Do **not** set `WS_PORT`, `NEXT_PUBLIC_WS_PORT`, `NEXT_PUBLIC_WS_URL`, or
-  `DISABLE_IN_PROCESS_WS` on Railway — the custom server handles everything
+  `DISABLE_IN_PROCESS_WS` on Railway - the custom server handles everything
   on the single platform-provided `PORT`.
 
 ## What to avoid

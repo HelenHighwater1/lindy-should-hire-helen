@@ -77,7 +77,7 @@ function buildConflictWarning(conflicts: CalendarConflict[]): string | null {
   if (conflicts.length === 1) {
     const c = conflicts[0];
     return (
-      `\n\n⚠️ **Heads up — this now overlaps with "${c.event.title}"** ` +
+      `\n\n⚠️ **Heads up - this now overlaps with "${c.event.title}"** ` +
       `(${fmtTime(c.event.start)}–${fmtTime(c.event.end)}, ${c.overlapMinutes} min overlap). ` +
       `Would you like me to shorten this meeting to remove the conflict, ` +
       `or push "${c.event.title}" out to start after this one ends?`
@@ -88,7 +88,7 @@ function buildConflictWarning(conflicts: CalendarConflict[]): string | null {
     (c) => `"${c.event.title}" (${fmtTime(c.event.start)}–${fmtTime(c.event.end)})`,
   );
   return (
-    `\n\n⚠️ **Heads up — this overlaps with ${conflicts.length} events:** ` +
+    `\n\n⚠️ **Heads up - this overlaps with ${conflicts.length} events:** ` +
     `${names.join(", ")}. ` +
     `Would you like me to shorten this meeting so it no longer conflicts?`
   );
@@ -325,7 +325,7 @@ export function executeAction(
       return {
         mutation: null,
         workspace: w,
-        outcomeDetail: `Summarized thread (${thread.length} message(s)) — see chat for summary and next steps.`,
+        outcomeDetail: `Summarized thread (${thread.length} message(s)) - see chat for summary and next steps.`,
       };
     }
     case "meeting_prep": {
@@ -337,7 +337,7 @@ export function executeAction(
       return {
         mutation: null,
         workspace: w,
-        outcomeDetail: `Meeting prep for "${ev.title}" — see chat for the brief.`,
+        outcomeDetail: `Meeting prep for "${ev.title}" - see chat for the brief.`,
       };
     }
     default: {
@@ -411,7 +411,7 @@ export async function runAgent(
   );
   await delay(STEP_DELAY_MS);
 
-  if (!result.action) {
+  if (result.actions.length === 0) {
     emitStep(
       step(
         "result",
@@ -428,7 +428,7 @@ export async function runAgent(
         "Result",
         "done",
         "result",
-        "Replied in chat — no calendar or email updates.",
+        "Replied in chat - no calendar or email updates.",
       ),
     );
     emit({ type: "chat_reply", payload: { text: result.reply } });
@@ -440,54 +440,60 @@ export async function runAgent(
     return { workspace: current, history: doneHistory };
   }
 
-  const actionLabel = `Tool: ${result.action.type.replace(/_/g, " ")}`;
-  emitStep(step("tool", actionLabel, "running", "tool"));
-  await delay(STEP_DELAY_MS);
-
-  let exec: ExecuteActionResult;
-  try {
-    exec = executeAction(result.action, current);
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : "Action failed";
-    emitStep(step("tool", actionLabel, "error", "tool", msg));
-    emit({ type: "error", payload: { message: msg } });
-    emit({ type: "agent_done" });
-    return { workspace: current, history: nextHistory };
-  }
-
-  current = exec.workspace;
-
-  if (exec.mutation) {
-    emit({ type: "workspace_update", payload: exec.mutation });
-  }
-
-  emitStep(step("tool", actionLabel, "done", "tool", exec.outcomeDetail));
-  await delay(STEP_DELAY_MS);
-
-  // Check for calendar conflicts after schedule/reschedule/focus actions
   let replyText = result.reply;
   const calendarActions = new Set([
     "schedule_meeting",
     "reschedule_meeting",
     "block_focus_time",
   ]);
-  if (result.action && calendarActions.has(result.action.type)) {
-    const affectedId = getAffectedEventId(result.action, exec);
-    if (affectedId) {
-      const ev = current.calendarEvents.find((e) => e.id === affectedId);
-      if (ev) {
-        const conflicts = findConflicts(current, ev.start, ev.end, ev.id);
-        const warning = buildConflictWarning(conflicts);
-        if (warning) {
-          replyText += warning;
+
+  for (let i = 0; i < result.actions.length; i++) {
+    const action = result.actions[i];
+    const actionLabel = `Tool: ${action.type.replace(/_/g, " ")}${result.actions.length > 1 ? ` (${i + 1}/${result.actions.length})` : ""}`;
+    emitStep(step(`tool-${i}`, actionLabel, "running", "tool"));
+    await delay(STEP_DELAY_MS);
+
+    let exec: ExecuteActionResult;
+    try {
+      exec = executeAction(action, current);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Action failed";
+      emitStep(step(`tool-${i}`, actionLabel, "error", "tool", msg));
+      emit({ type: "error", payload: { message: msg } });
+      emit({ type: "agent_done" });
+      return { workspace: current, history: nextHistory };
+    }
+
+    current = exec.workspace;
+
+    if (exec.mutation) {
+      emit({ type: "workspace_update", payload: exec.mutation });
+    }
+
+    emitStep(step(`tool-${i}`, actionLabel, "done", "tool", exec.outcomeDetail));
+    await delay(STEP_DELAY_MS);
+
+    if (calendarActions.has(action.type)) {
+      const affectedId = getAffectedEventId(action, exec);
+      if (affectedId) {
+        const ev = current.calendarEvents.find((e) => e.id === affectedId);
+        if (ev) {
+          const conflicts = findConflicts(current, ev.start, ev.end, ev.id);
+          const warning = buildConflictWarning(conflicts);
+          if (warning) {
+            replyText += warning;
+          }
         }
       }
     }
   }
 
-  emitStep(step("result", "Result", "running", "result", exec.outcomeDetail));
+  const lastOutcome = result.actions.length > 1
+    ? `Completed ${result.actions.length} actions`
+    : `Done`;
+  emitStep(step("result", "Result", "running", "result", lastOutcome));
   await delay(STEP_DELAY_MS);
-  emitStep(step("result", "Result", "done", "result", exec.outcomeDetail));
+  emitStep(step("result", "Result", "done", "result", lastOutcome));
 
   emit({ type: "chat_reply", payload: { text: replyText } });
   emit({ type: "agent_done" });

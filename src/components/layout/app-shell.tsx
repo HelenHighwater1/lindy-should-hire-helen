@@ -64,7 +64,7 @@ export function AppShell() {
     if (WS_PORT) {
       return `${wsScheme}//${window.location.hostname}:${WS_PORT}`;
     }
-    // Same origin + /ws path — works with the custom server (server.ts)
+    // Same origin + /ws path - works with the custom server (server.ts)
     return `${wsScheme}//${window.location.host}/ws`;
   }, []);
 

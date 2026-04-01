@@ -29,7 +29,7 @@ const contactPriya: Contact = {
   email: "priya.shah@example.com",
 };
 
-/** Calendar instants: March 2026 is PDT (UTC−7). Earliest event: 9:00 AM Pacific. */
+/** Calendar instants: March 2026 is PDT (UTC-7). Earliest event: 9:00 AM Pacific. */
 const calendarEvents: CalendarEvent[] = [
   {
     id: "cal-standup",
@@ -79,7 +79,7 @@ const emails: Email[] = [
     from: contactPriya,
     to: [contactSelf, contactJordan],
     subject: "Q2 budget draft",
-    body: `Hi Alex and Jordan —
+    body: `Hi Alex and Jordan -
 
 I'm circulating the Q2 budget draft (v3) for sign-off before finance closes the pack next week.
 
@@ -98,13 +98,13 @@ Please reply with questions or edits by EOD Thursday so I can lock the workbook 
     from: contactSelf,
     to: [contactPriya],
     subject: "Re: Q2 budget draft",
-    body: `Thanks Priya — I've read through the Contractors tab.
+    body: `Thanks Priya - I've read through the Contractors tab.
 
-Question: the $90K for Northwind Integration Partners — finance had that under "Professional Services" last quarter. Should we move that line into R&D headcount roll-up for Q2, or keep it as a separate contractor bucket so we can track vendor spend?
+Question: the $90K for Northwind Integration Partners - finance had that under "Professional Services" last quarter. Should we move that line into R&D headcount roll-up for Q2, or keep it as a separate contractor bucket so we can track vendor spend?
 
 If we fold it into R&D it simplifies the board slide; if we keep it separate it's easier to cut if we need to trim later. I'll follow whatever you and Jordan prefer.
 
-— Alex`,
+-- Alex`,
     timestamp: "2026-03-29T14:00:00.000Z",
     read: true,
     status: "sent",
@@ -115,23 +115,23 @@ If we fold it into R&D it simplifies the board slide; if we keep it separate it'
     from: contactSam,
     to: [contactSelf],
     subject: "Standup notes",
-    body: `Hey Alex — notes from today's standup so you have them in writing.
+    body: `Hey Alex - notes from today's standup so you have them in writing.
 
 What shipped / metrics
-- /v2/events read path p95 dropped from 890ms to ~780ms week over week (about 12% — I said 14% in standup but the dashboard rounds; we're using 12% in the report).
+- /v2/events read path p95 dropped from 890ms to ~780ms week over week (about 12% - I said 14% in standup but the dashboard rounds; we're using 12% in the report).
 - Error rate on the same route held flat at 0.3%.
 
 Decisions
 - We're pausing the GraphQL experiment for two weeks; REST + thin BFF stays the default for the mobile app slice.
 
 Action items
-- Me (Sam): spike Redis cache for GET /v2/events?orgId=&range= — target design doc by Wednesday EOD.
+- Me (Sam): spike Redis cache for GET /v2/events?orgId=&range= - target design doc by Wednesday EOD.
 - Jordan: review cache key strategy with me Thursday (15 min).
 - You: no action unless you want product sign-off on deprioritizing GraphQL; ping me if so.
 
 Blockers: none on our side; waiting on infra for a read replica in staging (ticket INFRA-4411).
 
-— Sam`,
+-- Sam`,
     timestamp: "2026-03-30T09:00:00.000Z",
     read: false,
     status: "inbox",
@@ -142,10 +142,10 @@ Blockers: none on our side; waiting on infra for a read replica in staging (tick
     from: contactSelf,
     to: [contactJordan],
     subject: "Follow-up on design review",
-    body: `Jordan — looping back on Tuesday's design review for the Lindy-style assistant shell (three-panel layout).
+    body: `Jordan - looping back on Tuesday's design review for the Lindy-style assistant shell (three-panel layout).
 
 Open items I'm still carrying:
-1) Navigation pattern: persistent left rail vs. collapsible — you preferred collapsible for narrow widths; I need a final call so eng can lock breakpoints.
+1) Navigation pattern: persistent left rail vs. collapsible - you preferred collapsible for narrow widths; I need a final call so eng can lock breakpoints.
 2) Trace panel: do we show raw tool JSON in v1 or only human-readable steps? Product wants readable-only for the demo.
 
 Can we lock the nav pattern by this Friday so I can unblock the handoff doc?
@@ -162,7 +162,7 @@ Alex`,
     from: contactSelf,
     to: [contactSam],
     subject: "Intro to the new analytics dashboard",
-    body: `Sam —
+    body: `Sam -
 
 Sharing the internal preview of the new analytics dashboard (staging only):
 
@@ -172,7 +172,7 @@ Sharing the internal preview of the new analytics dashboard (staging only):
 
 Preview URL (VPN): https://analytics-staging.example.internal/preview/dash-v2
 
-No need to file bugs in Jira yet — reply here if something looks wrong on the latency charts and I'll route it.
+No need to file bugs in Jira yet - reply here if something looks wrong on the latency charts and I'll route it.
 
 Best,
 Alex`,

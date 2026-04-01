@@ -140,7 +140,19 @@ export function buildSystemPrompt(workspace: WorkspaceData): string {
 
 Current date/time: ${nowLocal} (${DISPLAY_TIME_ZONE})
 
-IMPORTANT: All ISO 8601 timestamps in the data below are in UTC. The "localStart" / "localEnd" fields show the **user's local time** — always use these when referring to times in your natural-language replies to the user. When calling tools, continue to use ISO 8601 UTC strings.
+IMPORTANT: All ISO 8601 timestamps in the data below are in UTC. The "localStart" / "localEnd" fields show the **user's local time** - always use these when referring to times in your natural-language replies to the user. When calling tools, continue to use ISO 8601 UTC strings.
+
+## Day-of-week scheduling
+
+When the user mentions a day of the week (e.g. "next Wednesday"), you MUST:
+1. Calculate the calendar date that corresponds to that day of the week, counting forward from today.
+2. Verify the ISO date you produce actually falls on the correct weekday before calling any tool.
+3. If "next <day>" is mentioned, it always means the first occurrence of that day strictly after today.
+Double-check: does the date you chose land on the weekday the user said? If not, adjust.
+
+## Response format
+
+Reply in plain text. Do NOT use Markdown formatting (no **, no ##, no bullet-point lists with * or -). Use short paragraphs and natural punctuation instead.
 
 When the user asks you to do something that matches a workspace action, call exactly one tool with the correct parameters. Use contact ids and calendar event ids from the data.
 
@@ -148,16 +160,16 @@ If the request is ambiguous or you need more information, reply with a short cla
 
 When you call a tool, also include a natural-language reply in the same turn (text before or after the tool is fine).
 
-For **read-only / analytical tools** (summarize_thread, meeting_prep): your text reply IS the deliverable — write out the full summary, brief, or analysis the user asked for. Do not just say "I'll summarize it"; actually provide the content inline.
+For read-only / analytical tools (summarize_thread, meeting_prep): your text reply IS the deliverable - write out the full summary, brief, or analysis the user asked for. Do not just say "I'll summarize it"; actually provide the content inline.
 
-GROUNDING RULE: Only cite facts, numbers, names, dates, and action items that appear verbatim in the workspace data above. Do NOT invent attendees, metrics, decisions, or details that are not in the emails or calendar events. If the data is thin, say so — a short accurate summary is better than a long fabricated one.
+GROUNDING RULE: Only cite facts, numbers, names, dates, and action items that appear verbatim in the workspace data above. Do NOT invent attendees, metrics, decisions, or details that are not in the emails or calendar events. If the data is thin, say so - a short accurate summary is better than a long fabricated one.
 
 ## Calendar conflict awareness
 
 Before scheduling or rescheduling, mentally check whether the new time range overlaps with any existing events. If it does, still proceed with the tool call but mention the conflict in your reply and suggest a resolution:
 - If it conflicts with **one** other event, suggest either shortening the meeting you're moving or pushing the conflicting event out.
-- If it conflicts with **multiple** events, suggest shortening the meeting to avoid the overlap — keep the suggestion simple for the user.
-Always frame the conflict as a heads-up, not a blocker — the user already asked you to do it, so do it, then warn.
+- If it conflicts with **multiple** events, suggest shortening the meeting to avoid the overlap - keep the suggestion simple for the user.
+Always frame the conflict as a heads-up, not a blocker - the user already asked you to do it, so do it, then warn.
 
 ## Contacts, emails, and calendar (JSON)
 
@@ -245,7 +257,7 @@ function workspaceTools(): Tool[] {
     {
       name: "summarize_thread",
       description:
-        "Summarize an email thread by thread id. You MUST include the full summary and suggested next steps in your text reply — the tool itself only signals which thread you analyzed.",
+        "Summarize an email thread by thread id. You MUST include the full summary and suggested next steps in your text reply - the tool itself only signals which thread you analyzed.",
       input_schema: {
         type: "object",
         properties: {
@@ -273,7 +285,7 @@ function workspaceTools(): Tool[] {
     {
       name: "meeting_prep",
       description:
-        "Generate a meeting prep brief for an upcoming calendar event. You MUST include the full prep brief (attendees, agenda, talking points) in your text reply — the tool itself only signals which event you prepared for.",
+        "Generate a meeting prep brief for an upcoming calendar event. You MUST include the full prep brief (attendees, agenda, talking points) in your text reply - the tool itself only signals which event you prepared for.",
       input_schema: {
         type: "object",
         properties: {
@@ -294,28 +306,28 @@ function toolInputToPayload(input: unknown): Record<string, unknown> {
 
 function extractFromMessage(message: Anthropic.Message): LLMResult {
   const textParts: string[] = [];
-  let action: AgentAction | null = null;
+  const actions: AgentAction[] = [];
 
   for (const block of message.content) {
     if (block.type === "text") {
       textParts.push(block.text);
     } else if (block.type === "tool_use") {
-      if (!action && isAgentActionType(block.name)) {
-        action = {
+      if (isAgentActionType(block.name)) {
+        actions.push({
           type: block.name,
           payload: toolInputToPayload(block.input),
-        };
+        });
       }
     }
   }
 
   const reply =
     textParts.join("\n").trim() ||
-    (action
-      ? "I've queued that workspace action based on your request."
+    (actions.length > 0
+      ? "I've queued those workspace actions based on your request."
       : "I couldn't produce a reply. Please try rephrasing your request.");
 
-  return { reply, action };
+  return { reply, actions };
 }
 
 function mapAnthropicError(err: unknown): ProcessChatError {
@@ -393,46 +405,44 @@ export async function processChat(
       { timeout: 30_000 },
     );
 
-    const firstResult = extractFromMessage(message);
+    let accumulated = extractFromMessage(message);
 
-    if (message.stop_reason === "tool_use" && firstResult.action) {
-      const toolUseBlock = message.content.find(
+    while (message.stop_reason === "tool_use") {
+      const toolUseBlocks = message.content.filter(
         (b): b is Anthropic.Messages.ToolUseBlock => b.type === "tool_use",
       );
-      if (toolUseBlock) {
-        messages.push({ role: "assistant", content: message.content as Anthropic.Messages.ContentBlockParam[] });
-        messages.push({
-          role: "user",
-          content: [
-            {
-              type: "tool_result",
-              tool_use_id: toolUseBlock.id,
-              content: `Action "${firstResult.action.type}" executed successfully.`,
-            },
-          ],
-        });
+      if (toolUseBlocks.length === 0) break;
 
-        message = await client.messages.create(
-          {
-            model,
-            max_tokens: 2048,
-            system,
-            tools,
-            tool_choice: { type: "auto" },
-            messages,
-          },
-          { timeout: 30_000 },
-        );
+      messages.push({ role: "assistant", content: message.content as Anthropic.Messages.ContentBlockParam[] });
+      messages.push({
+        role: "user",
+        content: toolUseBlocks.map((block) => ({
+          type: "tool_result" as const,
+          tool_use_id: block.id,
+          content: `Action "${block.name}" executed successfully.`,
+        })),
+      });
 
-        const followUp = extractFromMessage(message);
-        return {
-          reply: followUp.reply,
-          action: firstResult.action,
-        };
-      }
+      message = await client.messages.create(
+        {
+          model,
+          max_tokens: 2048,
+          system,
+          tools,
+          tool_choice: { type: "auto" },
+          messages,
+        },
+        { timeout: 30_000 },
+      );
+
+      const followUp = extractFromMessage(message);
+      accumulated = {
+        reply: followUp.reply || accumulated.reply,
+        actions: [...accumulated.actions, ...followUp.actions],
+      };
     }
 
-    return firstResult;
+    return accumulated;
   } catch (err) {
     throw mapAnthropicError(err);
   }

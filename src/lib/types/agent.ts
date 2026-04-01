@@ -12,10 +12,10 @@ export interface AgentAction {
   payload: Record<string, unknown>;
 }
 
-/** Result of interpreting a user message (LLM reply + optional structured action). */
+/** Result of interpreting a user message (LLM reply + structured actions). */
 export interface LLMResult {
   reply: string;
-  action: AgentAction | null;
+  actions: AgentAction[];
 }
 
 export type TraceStepStatus = "running" | "done" | "error";

@@ -1,7 +1,7 @@
 // Custom production server: serves Next.js and WebSocket on the same port.
 // This is required for platforms like Railway that only expose a single port.
 
-// Prevent instrumentation.ts from starting a separate WS server — this
+// Prevent instrumentation.ts from starting a separate WS server - this
 // server handles WebSocket via the shared HTTP upgrade path instead.
 process.env.DISABLE_IN_PROCESS_WS = "1";
 

@@ -7,6 +7,7 @@ import {
   useState,
   type KeyboardEvent,
 } from "react";
+import ReactMarkdown from "react-markdown";
 
 import { DISPLAY_TIME_ZONE } from "@/lib/display-timezone";
 import type { ClientMessage } from "@/lib/types/protocol";
@@ -99,17 +100,22 @@ export function ChatPanel({
         : "Disconnected";
 
   return (
-    <div className="flex min-h-0 min-w-0 flex-col bg-white dark:bg-zinc-950">
-      <header className="shrink-0 border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
-        <div className="flex items-start justify-between gap-2">
+    <div data-tour-panel="center" className="flex min-h-0 min-w-0 flex-col bg-white dark:bg-zinc-950">
+      <header className="flex h-14 shrink-0 items-center justify-between border-b border-zinc-200 px-4 dark:border-zinc-800">
+        <div className="flex items-center gap-2">
+          <div className="flex size-7 items-center justify-center rounded-md bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </div>
           <div>
             <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
               Chat
             </h2>
-            <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
-              Ask the assistant to update your workspace.
+            <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+              Ask the assistant anything.
             </p>
           </div>
+        </div>
+        <div className="flex flex-col items-end gap-1">
           <span
             className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ${
               socketStatus === "connected"
@@ -121,12 +127,12 @@ export function ChatPanel({
           >
             {statusLabel}
           </span>
+          {socketError ? (
+            <p className="text-[10px] text-amber-700 dark:text-amber-300">
+              Unable to connect
+            </p>
+          ) : null}
         </div>
-        {socketError ? (
-          <p className="mt-1 text-xs text-amber-700 dark:text-amber-300">
-            WebSocket error — unable to connect to the agent server.
-          </p>
-        ) : null}
       </header>
 
       <div
@@ -135,7 +141,7 @@ export function ChatPanel({
       >
         {messages.length === 0 ? (
           <p className="text-center text-sm text-zinc-500 dark:text-zinc-400">
-            Try: “Schedule a 30m sync with Jordan tomorrow at 3pm”
+            Try: "Schedule a 30m sync with Jordan tomorrow at 3pm"
           </p>
         ) : null}
         {messages.map((m) => (
@@ -154,7 +160,13 @@ export function ChatPanel({
                     : "border border-zinc-200 bg-zinc-50 text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
               }`}
             >
-              <p className="whitespace-pre-wrap">{m.text}</p>
+              {m.role === "assistant" ? (
+                <div className="prose prose-sm dark:prose-invert max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+                  <ReactMarkdown>{m.text}</ReactMarkdown>
+                </div>
+              ) : (
+                <p className="whitespace-pre-wrap">{m.text}</p>
+              )}
             </div>
             <span className="px-1 text-[10px] text-zinc-400 dark:text-zinc-500">
               {formatTime(m.timestamp)}

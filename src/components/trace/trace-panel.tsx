@@ -81,14 +81,19 @@ export function TracePanel() {
   }, [traceSteps]);
 
   return (
-    <aside className="flex min-h-0 min-w-0 flex-col overflow-hidden bg-zinc-50 dark:bg-zinc-950">
-      <header className="shrink-0 border-b border-zinc-200 px-3 py-3 dark:border-zinc-800">
-        <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-          Agent trace
-        </h2>
-        <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
-          Live steps as the agent runs each request.
-        </p>
+    <aside data-tour-panel="right" className="flex min-h-0 min-w-0 flex-col overflow-hidden bg-zinc-50 dark:bg-zinc-950">
+      <header className="flex h-14 shrink-0 items-center gap-2 border-b border-zinc-200 bg-white px-3 dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="flex size-7 items-center justify-center rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div>
+          <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+            Agent Trace
+          </h2>
+          <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+            Live steps per request
+          </p>
+        </div>
       </header>
       <div
         ref={scrollRef}

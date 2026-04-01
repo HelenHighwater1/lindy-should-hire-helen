@@ -1,7 +1,50 @@
-import { useState } from "react";
+import { type Dispatch, type SetStateAction, useState } from "react";
 
 import { DISPLAY_TIME_ZONE } from "@/lib/display-timezone";
 import type { Email, EmailStatus } from "@/lib/types";
+
+export function EmailTabs({
+  emails,
+  activeTab,
+  setActiveTab,
+}: {
+  emails: Email[];
+  activeTab: EmailStatus;
+  setActiveTab: Dispatch<SetStateAction<EmailStatus>>;
+}) {
+  const tabs: { id: EmailStatus; label: string }[] = [
+    { id: "inbox", label: "Inbox" },
+    { id: "sent", label: "Sent" },
+    { id: "draft", label: "Drafts" },
+  ];
+  const counts: Record<EmailStatus, number> = {
+    inbox: emails.filter((e) => e.status === "inbox").length,
+    sent: emails.filter((e) => e.status === "sent").length,
+    draft: emails.filter((e) => e.status === "draft").length,
+  };
+  return (
+    <div className="flex gap-0.5 text-[11px]">
+      {tabs.map((tab) => {
+        const isActive = tab.id === activeTab;
+        return (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => setActiveTab(tab.id)}
+            className={`cursor-pointer rounded-full px-2 py-0.5 font-medium transition-colors ${
+              isActive
+                ? "bg-zinc-700 text-zinc-50 dark:bg-zinc-200 dark:text-zinc-900"
+                : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+            }`}
+          >
+            {tab.label}
+            <span className="ml-0.5 text-[10px] tabular-nums">{counts[tab.id]}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 const timeFmt = new Intl.DateTimeFormat("en-US", {
   timeZone: DISPLAY_TIME_ZONE,
@@ -37,14 +80,14 @@ export function EmailList({
   highlightedIds,
   highlightEpoch,
   onOpenEmail,
+  activeTab,
 }: {
   emails: Email[];
   highlightedIds: Set<string>;
   highlightEpoch: Record<string, number>;
   onOpenEmail: (email: Email) => void;
+  activeTab: EmailStatus;
 }) {
-  const [activeTab, setActiveTab] = useState<EmailStatus>("inbox");
-
   if (emails.length === 0) {
     return (
       <p className="px-3 py-2 text-sm text-zinc-500 dark:text-zinc-400">
@@ -53,45 +96,10 @@ export function EmailList({
     );
   }
 
-  const counts: Record<EmailStatus, number> = {
-    inbox: emails.filter((e) => e.status === "inbox").length,
-    sent: emails.filter((e) => e.status === "sent").length,
-    draft: emails.filter((e) => e.status === "draft").length,
-  };
-
   const filtered = emails.filter((email) => email.status === activeTab);
 
-  const tabs: { id: EmailStatus; label: string }[] = [
-    { id: "inbox", label: "Inbox" },
-    { id: "sent", label: "Sent" },
-    { id: "draft", label: "Drafts" },
-  ];
-
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex gap-1 rounded-md bg-zinc-100 p-1 text-xs dark:bg-zinc-900">
-        {tabs.map((tab) => {
-          const isActive = tab.id === activeTab;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex flex-1 items-center justify-between rounded px-2 py-1 font-medium transition-colors ${
-                isActive
-                  ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-800 dark:text-zinc-50"
-                  : "text-zinc-600 hover:bg-zinc-200/60 dark:text-zinc-400 dark:hover:bg-zinc-800/60"
-              }`}
-            >
-              <span>{tab.label}</span>
-              <span className="ml-1 rounded-full bg-zinc-200 px-1.5 text-[10px] font-semibold text-zinc-700 dark:bg-zinc-700 dark:text-zinc-100">
-                {counts[tab.id]}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
+    <div className="flex flex-col gap-1">
       {filtered.length === 0 ? (
         <p className="px-1 py-2 text-xs text-zinc-500 dark:text-zinc-400">
           No {activeTab === "draft" ? "drafts" : activeTab} messages.
@@ -125,7 +133,7 @@ export function EmailList({
                     <button
                       type="button"
                       onClick={() => onOpenEmail(email)}
-                      className="rounded-md border border-zinc-300 bg-zinc-50 px-2 py-1 text-[11px] font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
+                      className="cursor-pointer rounded-md border border-zinc-300 bg-zinc-50 px-2 py-1 text-[11px] font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
                     >
                       Open
                     </button>
