@@ -39,7 +39,7 @@ The agent can handle these types of requests against the simulated workspace:
 - Next.js + TypeScript + React (frontend)
 - Node.js backend
 - WebSockets for real-time trace streaming
-- LLM API (Anthropic or OpenAI) for real intent parsing and responses
+- LLM API (Anthropic, default `claude-sonnet-4-20250514`) for real intent parsing and responses
 - All workspace data is mocked and local -- no real OAuth or external
   data dependencies beyond the LLM
 
@@ -49,6 +49,24 @@ The agent can handle these types of requests against the simulated workspace:
 2. It feels alive - real-time, responsive, visually satisfying
 3. It is immediately understandable - no explanation required
 4. The code is clean - this will be read by engineers
+
+## Deploying on Railway
+
+- Create a new Railway project and connect this GitHub repo.
+- Use these commands:
+  - Build: `npm ci && npm run build`
+  - Start: `npm start`
+- Configure environment variables on the service:
+  - `ANTHROPIC_API_KEY` (required)
+  - `ANTHROPIC_MODEL` (optional, recommended: `claude-sonnet-4-20250514`)
+  - `WS_PORT` (optional, default `3001`)
+  - `NEXT_PUBLIC_WS_PORT` (optional, usually set to the same value as `WS_PORT`)
+- Do not set `DISABLE_IN_PROCESS_WS` so `src/instrumentation.ts` can start the
+  WebSocket server inside the Node.js runtime.
+- Leave `NEXT_PUBLIC_WS_URL` unset when running a single Railway service so the
+  client derives the WebSocket URL from the current host and `NEXT_PUBLIC_WS_PORT`:
+  it will connect to `ws://<host>:NEXT_PUBLIC_WS_PORT` for HTTP sites or
+  `wss://<host>:NEXT_PUBLIC_WS_PORT` for HTTPS.
 
 ## What to avoid
 

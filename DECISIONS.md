@@ -18,10 +18,10 @@ unless a new task makes them impossible -- in that case, flag it explicitly.
 - Trace steps: fixed ids `thinking`, `tool`, `result` per run; optional `kind` `thinking` | `tool` | `result` on `TraceStep`; streamed as `trace_step` messages; ~300ms delay between steps for demo pacing
 - Browser WebSocket URL: `ws://<host>:<port>` with `NEXT_PUBLIC_WS_PORT` (default `3001`, must match `WS_PORT`)
 - WebSockets: `ws` on a dedicated port (default 3001, `WS_PORT` in `.env`), started from
-  `src/instrumentation.ts` when `NEXT_RUNTIME === "nodejs"` so `npm run dev` runs the app and
-  the socket server together. Next.js 16 enables `src/instrumentation.ts` by default; the older
-  `experimental.instrumentationHook` flag is invalid on this version and is not set.
-- Render ([render.yaml](render.yaml)): two free **Web** services — **lindy-web** runs Next with `DISABLE_IN_PROCESS_WS=1` and `NEXT_PUBLIC_WS_URL` pointing at **lindy-ws**; **lindy-ws** runs `npm run start:ws` and listens on Render's `PORT` (`parsePort()` uses `WS_PORT` else `PORT` else 3001). Free instances spin down when idle.
+  `src/instrumentation.ts` when `NEXT_RUNTIME === "nodejs"` so `npm run dev` and the production
+  Next.js server both run the app and the socket server together. Next.js 16 enables
+  `src/instrumentation.ts` by default; the older `experimental.instrumentationHook` flag is
+  invalid on this version and is not set.
 - WebSocket testing: no in-process integration tests for the `ws` server. Vitest module resolution
   conflicts with `ws`, and such tests can hang. Manual verification and unit tests for pure
   helpers only.
