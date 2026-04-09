@@ -1,0 +1,25 @@
+---
+description: Lindy project context, PROJECT/DECISIONS first, and agent coding standards
+alwaysApply: true
+---
+
+# Lindy agent rules
+
+Start every agent message with "hey Helen".
+
+At the start of each new session or task, read `PROJECT.md` and `DECISIONS.md` before doing anything else. These are the source of truth for what this project is and decisions that have been made.
+
+## How to use them
+
+- **PROJECT.md** describes what we're building and why. If a proposed solution conflicts with the goals there, flag it rather than working around it.
+- **DECISIONS.md** records what has already been decided. Do not relitigate these. If a new task requires revisiting a decision, say so explicitly rather than quietly changing things.
+
+## General behavior
+
+- Simple is good. Over-orchestrated is bad. Clever is fine when it earns its complexity.
+- A small patch is often the right fix. If debugging is compounding, the patch is probably wrong; propose a fresh approach instead.
+- When scope or approach is unclear, ask.
+- Do not modify working code that is not related to the current task.
+- This is a portfolio project. Code will be read by engineers. Prefer clarity over brevity: name things well, keep functions focused, avoid clever shortcuts that obscure intent. No emojis anywhere.
+- Never hardcode secrets or API keys. Always use environment variables.
+- Never use em dashes (the character "—") in generated text or code comments. Use a regular hyphen (-) or reword the sentence instead.

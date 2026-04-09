@@ -2,7 +2,7 @@
 
 ## Why I built this
 
-I saw the Full Stack Software Engineer (Early Career) role and wanted to show you how I work rather than just tell you about it. So I built this over a couple of days. It is a functional demo of the Lindy assistant experience, running in the browser, powered by a real LLM. Not a mockup. Not a slide deck.
+I saw the Full Stack Software Engineer (Early Career) role and wanted to show you how I work rather than just tell you about it. So I built this over a couple of days. It is a functional demo of the Lindy assistant experience, running in the browser, powered by a real LLM.
 
 ## What it does
 
